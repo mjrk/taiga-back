@@ -32,6 +32,7 @@ class UserStorySearchResultsSerializer(serializers.LightSerializer):
     id = Field()
     ref = Field()
     subject = Field()
+    description = Field()
     status = Field(attr="status_id")
     total_points = MethodField()
     milestone_name = MethodField()
@@ -54,6 +55,7 @@ class TaskSearchResultsSerializer(serializers.LightSerializer):
     id = Field()
     ref = Field()
     subject = Field()
+    description = Field()
     status = Field(attr="status_id")
     assigned_to = Field(attr="assigned_to_id")
 
@@ -62,6 +64,7 @@ class IssueSearchResultsSerializer(serializers.LightSerializer):
     id = Field()
     ref = Field()
     subject = Field()
+    description = Field()
     status = Field(attr="status_id")
     assigned_to = Field(attr="assigned_to_id")
 
@@ -69,3 +72,4 @@ class IssueSearchResultsSerializer(serializers.LightSerializer):
 class WikiPageSearchResultsSerializer(serializers.LightSerializer):
     id = Field()
     slug = Field()
+    content = Field()
