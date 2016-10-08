@@ -53,6 +53,15 @@ class MilestoneViewSet(HistoryResourceMixin, WatchedResourceMixin,
     )
     queryset = models.Milestone.objects.all()
 
+    order_by_fields = ("project",
+                       "closed_points",
+                       "total_points",
+                       "name",
+                       "estimated_start",
+                       "estimated_finish",
+                       "closed",
+                       "created_date")
+
     def list(self, request, *args, **kwargs):
         res = super().list(request, *args, **kwargs)
         self._add_taiga_info_headers()
