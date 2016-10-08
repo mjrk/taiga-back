@@ -66,6 +66,15 @@ class MilestoneViewSet(HistoryResourceMixin, WatchedResourceMixin,
                        "created_date")
     queryset = models.Milestone.objects.all()
 
+    order_by_fields = ("project",
+                       "closed_points",
+                       "total_points",
+                       "name",
+                       "estimated_start",
+                       "estimated_finish",
+                       "closed",
+                       "created_date")
+
     def create(self, request, *args, **kwargs):
         project_id = request.DATA.get("project", 0)
         with advisory_lock("milestone-creation-{}".format(project_id)):

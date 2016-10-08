@@ -77,6 +77,15 @@ class TaskViewSet(OCCResourceMixin, VotedResourceMixin, HistoryResourceMixin, Wa
                        "subject",
                        "total_voters")
 
+    order_by_fields = ("project",
+                       "milestone",
+                       "status",
+                       "created_date",
+                       "modified_date",
+                       "assigned_to",
+                       "subject",
+                       "total_voters")
+
     def get_serializer_class(self, *args, **kwargs):
         if self.action in ["retrieve", "by_ref"]:
             return serializers.TaskNeighborsSerializer
