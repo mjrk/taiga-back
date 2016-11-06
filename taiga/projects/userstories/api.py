@@ -90,6 +90,7 @@ class UserStoryViewSet(OCCResourceMixin, VotedResourceMixin, HistoryResourceMixi
                        "project",
                        "milestone",
                        "status",
+                       "status__name",
                        "created_date",
                        "modified_date",
                        "assigned_to",

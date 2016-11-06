@@ -71,6 +71,7 @@ class TaskViewSet(OCCResourceMixin, VotedResourceMixin, HistoryResourceMixin, Wa
     order_by_fields = ("project",
                        "milestone",
                        "status",
+                       "status__name",
                        "created_date",
                        "modified_date",
                        "assigned_to",
