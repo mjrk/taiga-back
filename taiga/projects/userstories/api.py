@@ -69,6 +69,8 @@ class UserStoryViewSet(OCCResourceMixin, VotedResourceMixin, HistoryResourceMixi
                        base_filters.CreatedDateFilter,
                        base_filters.ModifiedDateFilter,
                        base_filters.FinishDateFilter,
+                       base_filters.MilestoneEstimatedStartFilter,
+                       base_filters.MilestoneEstimatedFinishFilter,
                        base_filters.OrderByFilterMixin)
     filter_fields = ["project",
                      "project__slug",
@@ -84,6 +86,7 @@ class UserStoryViewSet(OCCResourceMixin, VotedResourceMixin, HistoryResourceMixi
                        "project",
                        "milestone",
                        "status",
+                       "status__name",
                        "created_date",
                        "modified_date",
                        "assigned_to",
