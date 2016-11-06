@@ -99,6 +99,13 @@ class QueryParamsFilterMixin(BaseFilterBackend):
                     query_params[field_name] = field_data
 
         if query_params:
+            if (
+                "assigned_to" in query_params and
+                "," in query_params["assigned_to"]
+            ):
+                query_params = {
+                    "assigned_to__in": query_params["assigned_to"].split(",")
+                }
             try:
                 queryset = queryset.filter(**query_params)
             except ValueError:
