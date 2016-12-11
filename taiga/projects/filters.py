@@ -52,12 +52,18 @@ class DiscoverModeFilterBackend(FilterBackend):
 class CanViewProjectObjFilterBackend(FilterBackend):
     def filter_queryset(self, request, queryset, view):
         project_id = None
+        project_ids = None
 
         # Filter by filter_fields
         if (hasattr(view, "filter_fields") and "project" in view.filter_fields and
                 "project" in request.QUERY_PARAMS):
             try:
-                project_id = int(request.QUERY_PARAMS["project"])
+                if "," in request.QUERY_PARAMS["project"]:
+                    project_ids = [
+                        int(id_) for id_ in request.QUERY_PARAMS["project"].split(",")
+                    ]
+                else:
+                    project_id = int(request.QUERY_PARAMS["project"])
             except:
                 logger.error("Filtering project diferent value than an integer: {}".format(
                     request.QUERY_PARAMS["project"]

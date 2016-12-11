@@ -106,6 +106,12 @@ class QueryParamsFilterMixin(BaseFilterBackend):
                 query_params = {
                     "assigned_to__in": query_params["assigned_to"].split(",")
                 }
+            if (
+                "project" in query_params and
+                "," in query_params["project"]
+            ):
+                query_params["project__in"] = query_params["project"].split(",")
+                del query_params["project"]
             try:
                 queryset = queryset.filter(**query_params)
             except ValueError:
@@ -156,10 +162,16 @@ class PermissionBasedFilterBackend(FilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         project_id = None
+        project_ids = None
         if (hasattr(view, "filter_fields") and "project" in view.filter_fields and
                 "project" in request.QUERY_PARAMS):
             try:
-                project_id = int(request.QUERY_PARAMS["project"])
+                if "," in request.QUERY_PARAMS["project"]:
+                    project_ids = [
+                        int(id_) for id_ in request.QUERY_PARAMS["project"].split(",")
+                    ]
+                else:
+                    project_id = int(request.QUERY_PARAMS["project"])
             except:
                 logger.error("Filtering project diferent value than an integer: {}".format(
                     request.QUERY_PARAMS["project"]
@@ -179,6 +191,11 @@ class PermissionBasedFilterBackend(FilterBackend):
                                                    Q(is_admin=True))
 
             projects_list = [membership.project_id for membership in memberships_qs]
+
+            if project_ids:
+                projects_list = [
+                    id_ for id_ in projects_list if id_ in project_ids
+                ]
 
             qs = qs.filter(Q(project_id__in=projects_list) |
                            Q(project__public_permissions__contains=[self.permission]))
@@ -263,15 +280,23 @@ class MembersFilterBackend(PermissionBasedFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         project_id = None
+        project_ids = None
         project = None
+
         qs = queryset.filter(is_active=True)
         if "project" in request.QUERY_PARAMS:
             try:
-                project_id = int(request.QUERY_PARAMS["project"])
+                if "," in request.QUERY_PARAMS["project"]:
+                    project_ids = [
+                        int(id_) for id_ in request.QUERY_PARAMS["project"].split(",")
+                    ]
+                else:
+                    project_id = int(request.QUERY_PARAMS["project"])
             except:
                 logger.error("Filtering project diferent value than an integer: {}".format(
                              request.QUERY_PARAMS["project"]))
                 raise exc.BadRequest(_("'project' must be an integer value."))
+
 
         if project_id:
             Project = apps.get_model('projects', 'Project')
@@ -289,7 +314,12 @@ class MembersFilterBackend(PermissionBasedFilterBackend):
 
             projects_list = [membership.project_id for membership in memberships_qs]
 
-            if project:
+            if project_ids:
+                projects_list = [
+                    id_ for id_ in projects_list if id_ in project_ids
+                ]
+
+            elif project:
                 is_member = project.id in projects_list
                 has_project_public_view_permission = "view_project" in project.public_permissions
                 if not is_member and not has_project_public_view_permission:
