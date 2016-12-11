@@ -51,12 +51,18 @@ class DiscoverModeFilterBackend(FilterBackend):
 class CanViewProjectObjFilterBackend(FilterBackend):
     def filter_queryset(self, request, queryset, view):
         project_id = None
+        project_ids = None
 
         # Filter by filter_fields
         if (hasattr(view, "filter_fields") and "project" in view.filter_fields and
                 "project" in request.QUERY_PARAMS):
             try:
-                project_id = int(request.QUERY_PARAMS["project"])
+                if "," in request.QUERY_PARAMS["project"]:
+                    project_ids = [
+                        int(id_) for id_ in request.QUERY_PARAMS["project"].split(",")
+                    ]
+                else:
+                    project_id = int(request.QUERY_PARAMS["project"])
             except:
                 logger.error("Filtering project diferent value than an integer: {}".format(
                     request.QUERY_PARAMS["project"]
@@ -79,6 +85,11 @@ class CanViewProjectObjFilterBackend(FilterBackend):
                                                    Q(is_admin=True))
 
             projects_list = [membership.project_id for membership in memberships_qs]
+
+            if project_ids:
+                projects_list = [
+                    id_ for id_ in projects_list if id_ in project_ids
+                ]
 
             qs = qs.filter((Q(id__in=projects_list) |
                             Q(public_permissions__contains=["view_project"])))
