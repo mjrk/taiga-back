@@ -44,6 +44,7 @@ class IssueListSerializer(VoteResourceSerializerMixin, WatchedResourceSerializer
     created_date = Field()
     modified_date = Field()
     finished_date = Field()
+    due_date = Field()
     subject = Field()
     external_reference = Field()
     version = Field()
