@@ -62,6 +62,7 @@ class IssueViewSet(OCCResourceMixin, VotedResourceMixin, HistoryResourceMixin, W
                        filters.CreatedDateFilter,
                        filters.ModifiedDateFilter,
                        filters.FinishedDateFilter,
+                       filters.DueDateFilter,
                        filters.OrderByFilterMixin)
     filter_fields = ("project",
                      "project__slug",
@@ -77,6 +78,7 @@ class IssueViewSet(OCCResourceMixin, VotedResourceMixin, HistoryResourceMixin, W
                        "priority__name",
                        "created_date",
                        "modified_date",
+                       "due_date",
                        "owner",
                        "assigned_to",
                        "subject",
