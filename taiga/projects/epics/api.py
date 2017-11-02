@@ -25,6 +25,7 @@ from taiga.base import exceptions as exc
 from taiga.base.decorators import list_route
 from taiga.base.api import ModelCrudViewSet, ModelListViewSet
 from taiga.base.api.mixins import BlockedByProjectMixin
+from taiga.base.api.mixins import ResetOnCloseMixin
 from taiga.base.api.viewsets import NestedViewSetMixin
 from taiga.base.utils import json
 
@@ -47,7 +48,7 @@ from . import utils as epics_utils
 
 
 class EpicViewSet(OCCResourceMixin, VotedResourceMixin, HistoryResourceMixin, WatchedResourceMixin,
-                  ByRefMixin, TaggedResourceMixin, BlockedByProjectMixin, ModelCrudViewSet):
+                  ByRefMixin, TaggedResourceMixin, BlockedByProjectMixin, ResetOnCloseMixin, ModelCrudViewSet):
     validator_class = validators.EpicValidator
     queryset = models.Epic.objects.all()
     permission_classes = (permissions.EpicPermission,)

@@ -28,6 +28,7 @@ from taiga.base import response
 from taiga.base import status
 from taiga.base.decorators import list_route
 from taiga.base.api.mixins import BlockedByProjectMixin
+from taiga.base.api.mixins import ResetOnCloseMixin
 from taiga.base.api import ModelCrudViewSet
 from taiga.base.api import ModelListViewSet
 from taiga.base.api.utils import get_object_or_404
@@ -55,7 +56,7 @@ from . import validators
 
 
 class UserStoryViewSet(OCCResourceMixin, VotedResourceMixin, HistoryResourceMixin, WatchedResourceMixin,
-                       ByRefMixin, TaggedResourceMixin, BlockedByProjectMixin, ModelCrudViewSet):
+                       ByRefMixin, TaggedResourceMixin, BlockedByProjectMixin, ResetOnCloseMixin, ModelCrudViewSet):
     validator_class = validators.UserStoryValidator
     queryset = models.UserStory.objects.all()
     permission_classes = (permissions.UserStoryPermission,)

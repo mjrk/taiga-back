@@ -25,6 +25,7 @@ from taiga.base import response
 from taiga.base.decorators import list_route
 from taiga.base.api import ModelCrudViewSet, ModelListViewSet
 from taiga.base.api.mixins import BlockedByProjectMixin
+from taiga.base.api.mixins import ResetOnCloseMixin
 from taiga.base.api.utils import get_object_or_404
 
 from taiga.projects.history.mixins import HistoryResourceMixin
@@ -45,7 +46,7 @@ from . import validators
 
 
 class IssueViewSet(OCCResourceMixin, VotedResourceMixin, HistoryResourceMixin, WatchedResourceMixin,
-                   ByRefMixin, TaggedResourceMixin, BlockedByProjectMixin, ModelCrudViewSet):
+                   ByRefMixin, TaggedResourceMixin, BlockedByProjectMixin, ResetOnCloseMixin, ModelCrudViewSet):
     validator_class = validators.IssueValidator
     queryset = models.Issue.objects.all()
     permission_classes = (permissions.IssuePermission, )
@@ -95,6 +96,7 @@ class IssueViewSet(OCCResourceMixin, VotedResourceMixin, HistoryResourceMixin, W
 
     def update(self, request, *args, **kwargs):
         self.object = self.get_object_or_none()
+
         project_id = request.DATA.get('project', None)
         if project_id and self.object and self.object.project.id != project_id:
             try:
