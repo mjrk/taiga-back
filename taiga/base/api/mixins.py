@@ -301,3 +301,38 @@ class BlockeableDeleteMixin():
 class BlockedByProjectMixin(BlockeableSaveMixin, BlockeableDeleteMixin):
     def is_blocked(self, obj):
         return obj.project is not None and obj.project.blocked_code is not None
+
+
+class ResetOnCloseMixin():
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object_or_none()
+
+        status = self._get_status(self.object, request)
+        if status is not None and status != self.object.status:
+            if status.is_closed:
+                if self.object.assigned_to:
+                    request.DATA['assigned_to'] = None
+
+                watchers = self.object.get_watchers()
+                if watchers:
+                    from taiga.projects.notifications import services
+                    for user in watchers:
+                        services.remove_watcher(self.object, user)
+
+        return super().update(request, *args, **kwargs)
+
+    def _get_status(self, obj, request):
+        status_id = request.DATA.get('status', None)
+        if status_id is not None:
+            if obj.__class__.__name__ == "Epic":
+                return obj.project.epic_statuses.get(pk=status_id)
+            if obj.__class__.__name__ == "UserStory":
+                return obj.project.us_statuses.get(pk=status_id)
+            if obj.__class__.__name__ == "Task":
+                return obj.project.task_statuses.get(pk=status_id)
+            if obj.__class__.__name__ == "Issue":
+                return obj.project.issue_statuses.get(pk=status_id)
+
+        # ignore missing statuses
+        return None
