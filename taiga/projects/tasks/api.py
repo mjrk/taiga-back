@@ -63,6 +63,7 @@ class TaskViewSet(OCCResourceMixin, VotedResourceMixin, HistoryResourceMixin, Wa
                        filters.ModifiedDateFilter,
                        filters.MilestoneEstimatedStartFilter,
                        filters.MilestoneEstimatedFinishFilter,
+                       filters.DueDateFilter,
                        filters.FinishedDateFilter)
     filter_fields = ["user_story",
                      "milestone",

@@ -12,11 +12,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='issue',
-            name='due_date',
-            field=models.DateField(blank=True, default=None, null=True, verbose_name='due date'),
-        ),
+        # migrations.AddField(
+        #     model_name='issue',
+        #     name='due_date',
+        #     field=models.DateField(blank=True, default=None, null=True, verbose_name='due date'),
+        # ),
         migrations.AddField(
             model_name='issue',
             name='due_date_reason',
