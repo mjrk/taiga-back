@@ -281,6 +281,8 @@ class UserStoryViewSet(AssignedUsersSignalMixin, OCCResourceMixin,
     def update(self, request, *args, **kwargs):
         self.object = self.get_object_or_none()
         project_id = request.DATA.get('project', None)
+        new_project = False
+        update_tasks_to_project = False
 
         if project_id and self.object and self.object.project.id != project_id:
             try:
@@ -300,6 +302,8 @@ class UserStoryViewSet(AssignedUsersSignalMixin, OCCResourceMixin,
                         request.DATA['status'] = new_status.id
                     except UserStoryStatus.DoesNotExist:
                         request.DATA['status'] = new_project.default_us_status.id
+
+                update_tasks_to_project = True
             except Project.DoesNotExist:
                 return response.BadRequest(_("The project doesn't exist"))
 
@@ -309,7 +313,27 @@ class UserStoryViewSet(AssignedUsersSignalMixin, OCCResourceMixin,
                 status_id=request.DATA.get('status', None)
             ).aggregate(Max('kanban_order'))['kanban_order__max']
 
-        return super().update(request, *args, **kwargs)
+        result = super().update(request, *args, **kwargs)
+        if new_project and update_tasks_to_project:
+            self._update_tasks_to_project(request, new_project)
+        return result
+
+    def _update_tasks_to_project(self, request, new_project):
+        for subtask in self.object.tasks.all():
+            try:
+                try:
+                    new_status = new_project.task_statuses.get(
+                        slug=subtask.status.slug
+                    )
+                except TaskStatus.DoesNotExist:
+                    new_status = new_project.default_task_status.id
+
+                subtask.project = new_project
+                subtask.status = new_status
+                subtask.save()
+            except Exception as e:
+                # don't break because of task errors
+                pass
 
     @list_route(methods=["GET"])
     def filters_data(self, request, *args, **kwargs):
