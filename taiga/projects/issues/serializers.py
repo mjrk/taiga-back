@@ -30,13 +30,15 @@ from taiga.projects.mixins.serializers import StatusExtraInfoSerializerMixin
 from taiga.projects.notifications.mixins import WatchedResourceSerializer
 from taiga.projects.tagging.serializers import TaggedInProjectResourceSerializer
 from taiga.projects.votes.mixins.serializers import VoteResourceSerializerMixin
+from taiga.projects.time_spent.serializers import TimeSpentSerializerMixin
 
 
 class IssueListSerializer(VoteResourceSerializerMixin, WatchedResourceSerializer,
                           OwnerExtraInfoSerializerMixin, AssignedToExtraInfoSerializerMixin,
                           StatusExtraInfoSerializerMixin, ProjectExtraInfoSerializerMixin,
                           BasicAttachmentsInfoSerializerMixin, DueDateSerializerMixin,
-                          TaggedInProjectResourceSerializer, serializers.LightSerializer):
+                          TaggedInProjectResourceSerializer, TimeSpentSerializerMixin,
+                          serializers.LightSerializer):
     id = Field()
     ref = Field()
     severity = Field(attr="severity_id")
