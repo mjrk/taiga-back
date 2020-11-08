@@ -31,6 +31,7 @@ from taiga.projects.tagging.models import TaggedMixin
 from taiga.projects.occ import OCCModelMixin
 from taiga.projects.notifications.mixins import WatchedModelMixin
 from taiga.projects.mixins.blocked import BlockedMixin
+from taiga.projects.time_spent.models import TimeSpentMixin
 
 
 class RolePoints(models.Model):
@@ -73,7 +74,7 @@ class RolePoints(models.Model):
         return self.user_story.project
 
 
-class UserStory(OCCModelMixin, WatchedModelMixin, BlockedMixin, TaggedMixin, DueDateMixin, models.Model):
+class UserStory(OCCModelMixin, WatchedModelMixin, BlockedMixin, TaggedMixin, DueDateMixin, TimeSpentMixin, models.Model):
     ref = models.BigIntegerField(db_index=True, null=True, blank=True, default=None,
                                  verbose_name=_("ref"))
     milestone = models.ForeignKey("milestones.Milestone", null=True, blank=True,

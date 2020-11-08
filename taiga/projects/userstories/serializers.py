@@ -31,6 +31,7 @@ from taiga.projects.notifications.mixins import WatchedResourceSerializer
 from taiga.projects.tagging.serializers import TaggedInProjectResourceSerializer
 from taiga.projects.votes.mixins.serializers import VoteResourceSerializerMixin
 from taiga.projects.history.mixins import TotalCommentsSerializerMixin
+from taiga.projects.time_spent.serializers import TimeSpentSerializerMixin
 
 
 class OriginItemSerializer(serializers.LightSerializer):
@@ -50,7 +51,8 @@ class UserStoryListSerializer(ProjectExtraInfoSerializerMixin,
         OwnerExtraInfoSerializerMixin, AssignedToExtraInfoSerializerMixin,
         StatusExtraInfoSerializerMixin, BasicAttachmentsInfoSerializerMixin,
         TaggedInProjectResourceSerializer, TotalCommentsSerializerMixin,
-        DueDateSerializerMixin, serializers.LightSerializer):
+        DueDateSerializerMixin, TimeSpentSerializerMixin,
+        serializers.LightSerializer):
 
     id = Field()
     ref = Field()
