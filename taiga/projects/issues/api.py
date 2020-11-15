@@ -24,6 +24,7 @@ from taiga.base.api import ModelCrudViewSet, ModelListViewSet
 from taiga.base.api.mixins import BlockedByProjectMixin
 from taiga.base.api.utils import get_object_or_404
 
+from taiga.permissions.services import is_project_admin
 from taiga.projects.history.mixins import HistoryResourceMixin
 from taiga.projects.milestones.models import Milestone
 from taiga.projects.mixins.by_ref import ByRefMixin
@@ -35,6 +36,7 @@ from taiga.projects.notifications.mixins import WatchersViewSetMixin
 from taiga.projects.occ import OCCResourceMixin
 from taiga.projects.tagging.api import TaggedResourceMixin
 from taiga.projects.votes.mixins.viewsets import VotedResourceMixin, VotersViewSetMixin
+
 
 from .utils import attach_extra_info
 
@@ -95,6 +97,15 @@ class IssueViewSet(AssignedToSignalMixin, OCCResourceMixin, VotedResourceMixin,
     def update(self, request, *args, **kwargs):
         self.object = self.get_object_or_none()
         project_id = request.DATA.get('project', None)
+        time_spent_to_date = request.DATA.get('time_spent_to_date', None)
+
+        if time_spent_to_date:
+            if not is_project_admin(request.user, self.object):
+                raise exc.PermissionDenied(_(
+                    "You don't have permissions to modify the time spent on" +
+                    " this issue."
+                ))
+
         if project_id and self.object and self.object.project.id != project_id:
             try:
                 new_project = Project.objects.get(pk=project_id)

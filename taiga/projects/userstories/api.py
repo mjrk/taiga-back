@@ -34,6 +34,7 @@ from taiga.base.api import ModelListViewSet
 from taiga.base.api.utils import get_object_or_404
 from taiga.base.utils import json
 
+from taiga.permissions.services import is_project_admin
 from taiga.projects.history.mixins import HistoryResourceMixin
 from taiga.projects.history.services import take_snapshot
 from taiga.projects.milestones.models import Milestone
@@ -283,6 +284,14 @@ class UserStoryViewSet(AssignedUsersSignalMixin, OCCResourceMixin,
         project_id = request.DATA.get('project', None)
         new_project = False
         update_tasks_to_project = False
+        time_spent_to_date = request.DATA.get('time_spent_to_date', None)
+
+        if time_spent_to_date:
+            if not is_project_admin(request.user, self.object):
+                raise exc.PermissionDenied(_(
+                    "You don't have permissions to modify the time spent on" +
+                    " this user story."
+                ))
 
         if project_id and self.object and self.object.project.id != project_id:
             try:
